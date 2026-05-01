@@ -1,0 +1,58 @@
+type Recipe {
+    id: ID
+    name: String
+    category: String
+    servings: Int
+    preparationTime: Int
+    image: String
+    ingredients: [String]
+    steps: [String]
+    nutritionalValues: [String]
+    ratings: [Int]
+    averageRating: Float
+}
+
+type CategoryCount {
+    name: String
+    count: Int
+}
+
+type Query {
+    recipes(page: Int, size: Int): [Recipe]
+    recipe(id: ID): Recipe
+    searchRecipes(query: String): [Recipe]
+    filterRecipes(category: String, sortBy: String): [Recipe]
+    recipeCountByCategory: [CategoryCount]
+    totalCount: Int
+    averageRating: Float
+}
+
+type Mutation {
+    createRecipe(
+        name: String!
+        category: String!
+        servings: Int!
+        preparationTime: Int!
+        image: String
+        ingredients: [String]
+        steps: [String]
+        nutritionalValues: [String]
+    ): Recipe
+
+    updateRecipe(
+        id: ID!
+        name: String!
+        category: String!
+        servings: Int!
+        preparationTime: Int!
+        image: String
+        ingredients: [String]
+        steps: [String]
+        nutritionalValues: [String]
+    ): Recipe
+
+    deleteRecipe(id: ID!): Boolean
+    addRating(id: ID!, rating: Int!): Recipe
+    startFaker: Boolean
+    stopFaker: Boolean
+}
