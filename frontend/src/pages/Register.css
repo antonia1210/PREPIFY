@@ -1,0 +1,107 @@
+.register-container {
+    min-height: 100vh;
+    background-color: #F5EFE6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Kaisei Tokumin', serif;
+}
+.logo {
+    font-size: clamp(32px, 7vw, 50px);
+    align-self: flex-start;
+    margin-left: 10px;
+    padding-top: 40px;
+    color: #AF776F;
+}
+.register-box {
+    background-color: #fffaf3;
+    padding: 30px;
+    width: min(100%, 320px);
+    box-sizing: border-box;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.register-box h2 {
+    color: #562121;
+    font-weight: bold;
+    font-size: 32px;
+    margin-bottom: 20px;
+    margin-top: 0;
+}
+.register-box label {
+    font-size: 15px;
+    text-align: center;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.hint {
+    font-size: 11px;
+    margin-top: -10px;
+    margin-bottom: 10px;
+    color: #777;
+}
+
+.register-box input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    border: none;
+    background-color: #f0f0f0;
+}
+
+.register-box input:focus,
+.register-box select:focus{
+    outline: 2px solid #AF776F;
+}
+
+.register-box select {
+    width: 100%;
+    box-sizing: border-box;
+    height: 40px;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    border: none;
+    background-color: #f0f0f0;
+}
+.register-box button {
+    width: 100%;
+    padding: 12px;
+    background-color: #AF776F;
+    color: white;
+    font-size: 22px;
+    font-family: inherit;
+    border: none;
+    border-radius: 10px;
+    margin-top: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.register-box button:hover {
+    background-color: #925f58;
+}
+
+.error {
+    color: red;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+.login-link {
+    cursor: pointer;
+    margin-top: 10px;
+    display: inline-block;
+}
+@media (max-width: 480px) {
+    .register-box {
+        padding: 20px;
+    }
+
+    .logo {
+        margin-left: 0;
+    }
+}

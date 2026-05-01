@@ -1,0 +1,77 @@
+.container {
+    text-align: center;
+    padding: 40px 20px;
+    font-family: "Kaisei Tokumin", serif;
+    background-color: #F5EFE6;
+    width: 100%;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+.title {
+    font-size: clamp(40px, 10vw, 100px);
+    color: #AF776F;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    font-family: "Kaisei Tokumin", serif;
+    line-height: 1.1;
+}
+
+.tagline {
+    font-size: clamp(18px, 4vw, 30px);
+    margin-bottom: 30px;
+    color: #3C0A06;
+    padding: 0 10px;
+}
+
+.description {
+    max-width: 800px;
+    margin: 0 auto 50px auto;
+    font-size: clamp(14px, 2.5vw, 18px);
+    color: rgba(60, 10, 6, 0.55);
+    padding: 0 10px;
+    line-height: 1.6;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+}
+
+.buttons button {
+    padding: 12px 20px;
+    font-size: clamp(16px, 2.5vw, 22px);
+    font-family: "Kaisei Tokumin", serif;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    width: min(90%, 220px);
+    min-height: 55px;
+}
+
+.primary,
+.secondary {
+    background-color: #BFA89E;
+    color: black;
+}
+@media (max-width: 480px) {
+    .container {
+        padding: 30px 15px;
+    }
+
+    .title {
+        margin-top: 20px;
+        margin-bottom: 25px;
+    }
+
+    .tagline {
+        margin-bottom: 20px;
+    }
+
+    .description {
+        margin-bottom: 35px;
+    }
+}

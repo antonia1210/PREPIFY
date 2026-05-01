@@ -1,0 +1,65 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    gap:20px;
+    background-color: #F5EFE6;
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    flex:1;
+}
+
+.nav-links button {
+    background-color: #E5D8C5;
+    border: none;
+    padding: 10px 25px;
+    min-width: 240px;
+    height: 50px;
+    font-family: 'Kaisei Tokumin', serif;
+    font-size: 18px;
+    color: black;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+.profile-circle {
+    margin-top: 10px;
+    width: 60px;
+    height: 60px;
+    background-color: #D87171;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+
+    .nav-links {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .nav-links button {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .profile-circle {
+        align-self: end;
+    }
+}

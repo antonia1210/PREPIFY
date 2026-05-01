@@ -1,0 +1,341 @@
+.feed-container {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #F5EFE6;
+    min-height: 100vh;
+    font-family: 'Kaisei Tokumin', serif;
+}
+
+.logo {
+    margin-top: 0;
+    color: #AF776F;
+}
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.left-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.left-controls input {
+    padding: 10px;
+    width: min(100%, 250px);
+    box-sizing: border-box;
+    border: none;
+    background-color: #EDEDED;
+}
+
+.left-controls button {
+    background-color: transparent;
+    color: black;
+    border: none;
+    padding: 10px 20px;
+    font-family: inherit;
+    font-size: 16px;
+}
+
+.right-controls {
+    display: flex;
+    justify-content: flex-end;
+    border-radius: 10px;
+}
+
+.add-button {
+    background-color: #E5D8C5;
+    padding: 12px 30px;
+    border: none;
+    font-family: inherit;
+    font-size: 20px;
+    cursor: pointer;
+    color: black;
+    border-radius: 10px;
+}
+
+.table-wrapper {
+    background: #FFFDF9;
+    border-radius: 20px;
+    border: 0.5px solid #D4C4B0;
+    overflow-x: auto;
+    box-shadow: 0 4px 24px rgba(60, 30, 20, 0.06);
+}
+
+.recipe-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: unset;
+}
+
+.recipe-img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.recipe-table th,
+.recipe-table td {
+    padding: 15px 20px;
+    text-align: left;
+    border-bottom: 0.5px solid #E8DDD0;
+    border-left: none;
+    border-right: none;
+    vertical-align: middle;
+}
+
+.recipe-table thead {
+    background-color: #BFA89E;
+    font-weight: bold;
+}
+
+.recipe-table th {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #8C7060;
+}
+
+.recipe-table tbody tr {
+    border-bottom: 0.5px solid #E8DDD0;
+    transition: background 0.15s;
+}
+
+.recipe-table tbody tr:hover {
+    background-color: #FDF8F3;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.pagination button {
+    background-color: #E5D8C5;
+    border: none;
+    padding: 10px 20px;
+    font-family: 'Kaisei Tokumin', serif;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pagination button:hover:not(:disabled) {
+    background-color: #d6c3a8;
+    transform: translateY(-1px);
+}
+
+.pagination button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.page-number {
+    font-size: 18px;
+    font-weight: bold;
+    min-width: 30px;
+    text-align: center;
+}
+
+.actions {
+    display: flex;
+    background-color: #AF776F;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px 0;
+    border-radius: 10px;
+    gap: 10px;
+}
+
+.actions button {
+    background: none;
+    border: none;
+    color: white;
+    font-family: inherit;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.sort-filter {
+    background: none;
+    border: none;
+    font-size: 14px;
+    color: #777;
+    cursor: pointer;
+    border-radius: 500px;
+}
+
+.feed-container {
+    animation: fadeIn 0.5s ease-in-out;
+}
+.filter-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.3);
+    z-index: 99;
+}
+
+.filter-panel {
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 350px;
+    height: 100%;
+    background: white;
+    z-index: 100;
+    padding: 2rem;
+    transition: right 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.filter-panel.open {
+    right: 0;
+}
+
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.filter-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.filter-section select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.clear-filters {
+    margin-top: 100px;
+    padding: 1rem;
+    background: #AF776F;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+@media (max-width: 768px) {
+    .feed-container {
+        padding: 12px;
+    }
+
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .left-controls,
+    .right-controls {
+        width: 100%;
+    }
+
+    .left-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .left-controls input,
+    .left-controls button,
+    .add-button {
+        width: 100%;
+    }
+
+    .table-wrapper {
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        overflow: visible;
+    }
+
+    .recipe-table,
+    .recipe-table tbody,
+    .recipe-table tr,
+    .recipe-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .recipe-table thead {
+        display: none;
+    }
+
+    .recipe-table tbody tr {
+        background: #FFFDF9;
+        border: 1px solid #E8DDD0;
+        border-radius: 16px;
+        margin-bottom: 16px;
+        padding: 12px;
+        box-shadow: 0 4px 12px rgba(60, 30, 20, 0.05);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+
+    .recipe-table td {
+        border: none;
+        padding: 4px 8px;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .recipe-table td:nth-child(2)::before { content: "🍽 "; font-weight: bold; }
+    .recipe-table td:nth-child(3)::before { content: "Category: "; color: #AF776F; }
+    .recipe-table td:nth-child(4)::before { content: "Servings: "; color: #AF776F; }
+
+    .recipe-table td:nth-child(1) {
+        justify-content: center;
+        padding: 0 0 8px 0;
+    }
+
+    .recipe-img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 12px;
+        display: block;
+    }
+
+    .recipe-table td:last-child {
+        padding: 8px 0 0 0;
+    }
+
+    .actions {
+        width: 100%;
+        flex-wrap: nowrap;
+        justify-content: space-around;
+        padding: 10px;
+        margin-top: 8px;
+        border-radius: 10px;
+    }
+
+}

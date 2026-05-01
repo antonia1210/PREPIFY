@@ -1,0 +1,139 @@
+.add-recipe-container {
+    background-color: #F5EFE6;
+    min-height: 100vh;
+    padding: 40px;
+    font-family: 'Kaisei Tokumin', serif;
+}
+
+.form-card {
+    background-color: #d1c8bd;
+    padding: 40px;
+    border-radius: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+.form-title {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #562121;
+    font-size: 32px;
+    font-weight: bold;
+}
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+.left-column,
+.right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.form-card input,
+.form-card textarea {
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    background-color: #f0f0f0;
+    font-size: 16px;
+}
+
+.form-card input:focus,
+.form-card :focus {
+    outline: 2px solid #AF776F;
+}
+.form-card textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+.form-card label {
+    font-weight: bold;
+}
+.error {
+    color: red;
+    font-size: 12px;
+}
+
+.image-preview {
+    margin-top: 30px;
+    text-align: center;
+}
+.image-preview img {
+    max-width: 300px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+.submit-btn {
+    margin-top: 30px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 12px 40px;
+    background-color: #e5d8c5;
+    border: none;
+    border-radius: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+    color: black;
+    width: fit-content;
+    font-family: inherit;
+}
+.submit-btn:hover {
+    background-color: #d6c4ab;
+}
+
+@media (max-width: 1024px) {
+    .form-card {
+        padding: 30px;
+    }
+    .form-grid {
+        gap: 20px;
+    }
+}
+/* tablet */
+@media (max-width: 1024px) {
+    .form-card {
+        padding: 30px;
+    }
+
+    .form-grid {
+        gap: 20px;
+    }
+}
+
+/* mobile */
+@media (max-width: 768px) {
+
+    .add-recipe-container {
+        padding: 20px;
+    }
+    .form-card {
+        padding: 20px;
+    }
+    .form-title {
+        font-size: 24px;
+    }
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    .left-column,
+    .right-column {
+        gap: 10px;
+    }
+    .form-card input,
+    .form-card textarea {
+        font-size: 14px;
+        padding: 10px;
+    }
+    .submit-btn {
+        width: 100%;
+        font-size: 16px;
+        padding: 12px;
+    }
+    .image-preview img {
+        max-width: 100%;
+    }
+}

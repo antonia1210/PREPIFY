@@ -1,0 +1,120 @@
+.statistics-page {
+    padding: 40px;
+    background-color: #F5EFE6;
+    min-height: 100vh;
+    font-family: 'Kaisei Tokumin', serif;
+}
+.logo {
+    color: #AF776F;
+}
+.title {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 32px;
+    color: #562121;
+}
+.statistics-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+@media (max-width: 768px) {
+    .statistics-container {
+        grid-template-columns: 1fr;
+    }
+}
+.chart-view, .table-view {
+    background: #FFFDF9;
+    padding: 20px;
+    border-radius: 20px;
+}
+
+.table-wrapper {
+    background: #FFFDF9;
+    border-radius: 20px;
+    border: 0.5px solid #D4C4B0;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(60, 30, 20, 0.06);
+    margin-top: 15px;
+}
+
+.table-wrapper table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.table-wrapper th,
+.table-wrapper td {
+    padding: 15px 20px;
+    text-align: left;
+    border-bottom: 0.5px solid #E8DDD0;
+}
+
+.table-wrapper thead {
+    background-color: #BFA89E;
+}
+
+.table-wrapper th {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #8C7060;
+}
+
+.table-wrapper tbody tr:hover {
+    background-color: #FDF8F3;
+}
+
+hr {
+    margin: 20px 0;
+}
+
+.rating-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.rating-bar-container {
+    width: 200px;
+    height: 15px;
+    background: #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.rating-bar {
+    height: 100%;
+    background: #A65A5A;
+}
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.statistics-page {
+    animation: fadeIn 0.5s ease-in-out;
+}
+.rating-bar {
+    height: 100%;
+    background: #A65A5A;
+    width: 0;
+    animation: growBar 0.7s ease forwards;
+}
+
+@keyframes growBar {
+    from {
+        width: 0;
+    }
+    to {
+        width: var(--width);
+    }
+}
