@@ -4,7 +4,10 @@ import com.anto.backend.dto.CreateRecipeRequest;
 import com.anto.backend.dto.RatingRequest;
 import com.anto.backend.dto.UpdateRecipeRequest;
 import com.anto.backend.model.Recipe;
+import com.anto.backend.service.LogService;
+import com.anto.backend.service.MaliciousDetectionService;
 import com.anto.backend.service.RecipeService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,12 +18,20 @@ import java.util.Map;
 @RequestMapping("/api/recipes")
 public class RecipeController {
     private final RecipeService service;
-    public RecipeController(RecipeService service) {
+    private final LogService logService;
+    private final MaliciousDetectionService detectionService;
+    public RecipeController(RecipeService service, LogService logService, MaliciousDetectionService detectionService) {
         this.service = service;
+        this.logService = logService;
+        this.detectionService = detectionService;
     }
     @PostMapping
-    public Recipe create(@RequestBody @Valid CreateRecipeRequest request){
-        return service.create(request);
+    public Recipe create(@RequestBody @Valid CreateRecipeRequest request, @RequestParam(required = false) Integer userId, HttpServletRequest httpRequest) {
+        Recipe recipe = service.create(request, userId);
+        String role = userId != null ? service.getUserRole(userId) : "ANONYMOUS";
+        logService.info("CREATE_RECIPE", userId, role, "Created recipe: " + recipe.getName(), httpRequest.getRemoteAddr());
+        detectionService.analyze(userId, "CREATE_RECIPE", httpRequest.getRemoteAddr());
+        return recipe;
     }
     @GetMapping("/search")
     public List<Recipe> search(@RequestParam(required = false) String query){
@@ -40,12 +51,19 @@ public class RecipeController {
         return service.getAll(page, size);
     }
     @PutMapping("/{id}")
-    public Recipe update(@PathVariable int id, @RequestBody @Valid UpdateRecipeRequest request){
-        return service.update(id, request);
+    public Recipe update(@PathVariable int id, @RequestBody @Valid UpdateRecipeRequest request, @RequestParam(required = false) Integer userId, HttpServletRequest httpRequest) {
+        Recipe recipe = service.update(id, request);
+        String role = userId != null ? service.getUserRole(userId) : "ANONYMOUS";
+        logService.info("UPDATE_RECIPE", userId, role, "Updated recipe: " + recipe.getName(), httpRequest.getRemoteAddr());
+        detectionService.analyze(userId, "UPDATE_RECIPE", httpRequest.getRemoteAddr());
+        return recipe;
     }
     @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable int id){
-        service.deleteById(id);
+    public void deleteById(@PathVariable int id, @RequestParam Integer userId, HttpServletRequest httpRequest) {
+        String role = service.getUserRole(userId);
+        service.deleteById(id, userId);
+        logService.info("DELETE_RECIPE", userId, role, "Deleted recipe id: " + id, httpRequest.getRemoteAddr());
+        detectionService.analyze(userId, "DELETE_RECIPE", httpRequest.getRemoteAddr());
     }
     @PostMapping("/{id}/rating")
     public Recipe addRating(@PathVariable int id, @RequestBody @Valid RatingRequest request){

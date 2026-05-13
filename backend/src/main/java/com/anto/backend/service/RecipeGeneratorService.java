@@ -1,6 +1,8 @@
 package com.anto.backend.service;
 
 import com.anto.backend.dto.CreateRecipeRequest;
+import com.anto.backend.dto.IngredientRequest;
+import com.anto.backend.dto.NutritionalValueRequest;
 import com.anto.backend.dto.RecipeUpdateEvent;
 import com.github.javafaker.Faker;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -40,7 +42,7 @@ public class RecipeGeneratorService {
             while (running.get()) {
                 try {
                     for (int i = 0; i < batchSize; i++) {
-                        recipeService.create(buildFakeRecipe());
+                        recipeService.create(buildFakeRecipe(), null);
                     }
 
                     int totalCount = recipeService.getTotalCount();
@@ -119,12 +121,22 @@ public class RecipeGeneratorService {
         request.setPreparationTime((random.nextInt(9) + 1) * 10);
         request.setImage("https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400");
 
-        request.setIngredients(List.of(
-                faker.food().ingredient(),
-                faker.food().ingredient(),
-                faker.food().ingredient(),
-                faker.food().spice()
-        ));
+        IngredientRequest ing1 = new IngredientRequest();
+        ing1.setName(faker.food().ingredient());
+        ing1.setQuantity(random.nextInt(5) + 1);
+        ing1.setUnit("g");
+
+        IngredientRequest ing2 = new IngredientRequest();
+        ing2.setName(faker.food().ingredient());
+        ing2.setQuantity(random.nextInt(3) + 1);
+        ing2.setUnit("cup");
+
+        IngredientRequest ing3 = new IngredientRequest();
+        ing3.setName(faker.food().spice());
+        ing3.setQuantity(1);
+        ing3.setUnit("tbsp");
+
+        request.setIngredients(List.of(ing1, ing2, ing3));
 
         request.setSteps(List.of(
                 "Prepare all ingredients",
@@ -133,12 +145,22 @@ public class RecipeGeneratorService {
                 "Serve and enjoy"
         ));
 
-        request.setNutritionalValues(List.of(
-                "Calories: " + (random.nextInt(500) + 150),
-                "Protein: " + (random.nextInt(25) + 5) + "g",
-                "Carbs: " + (random.nextInt(60) + 10) + "g"
-        ));
+        NutritionalValueRequest cal = new NutritionalValueRequest();
+        cal.setName("Calories");
+        cal.setAmount(random.nextInt(500) + 150);
+        cal.setUnit("kcal");
 
+        NutritionalValueRequest protein = new NutritionalValueRequest();
+        protein.setName("Protein");
+        protein.setAmount(random.nextInt(25) + 5);
+        protein.setUnit("g");
+
+        NutritionalValueRequest carbs = new NutritionalValueRequest();
+        carbs.setName("Carbs");
+        carbs.setAmount(random.nextInt(60) + 10);
+        carbs.setUnit("g");
+
+        request.setNutritionalValues(List.of(cal, protein, carbs));
         return request;
     }
 }

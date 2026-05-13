@@ -3,6 +3,7 @@ import "./Register.css"
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import {validateRegister} from "../validation/registerValidation.js";
+import API_BASE from "../config.js"
 export default function Register() {
     const navigate = useNavigate();
     const [form, setForm] = useState({
@@ -29,7 +30,7 @@ export default function Register() {
             return;
         }
         try {
-            const response = await fetch("http://localhost:8080/api/users/register", {
+            const response = await fetch(`${API_BASE}/api/users/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

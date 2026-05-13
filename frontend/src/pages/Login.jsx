@@ -3,6 +3,7 @@ import "./Login.css"
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import {validateLogin} from "../validation/loginValidation.js";
+import API_BASE from "../config.js"
 export default function Login() {
     const navigate = useNavigate();
     const [form, setForm] = useState({
@@ -23,7 +24,7 @@ export default function Login() {
             return;
         }
         try {
-            const response = await fetch("http://localhost:8080/api/users/login", {
+            const response = await fetch(`${API_BASE}/api/users/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(form)

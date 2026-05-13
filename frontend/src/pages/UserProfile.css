@@ -145,3 +145,32 @@
     color: #999;
     font-size: 1rem;
 }
+
+.admin-panel-btn {
+    background: #562121;
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background 0.2s;
+    font-family: inherit;
+}
+.logout-btn {
+    background: #562121;
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background 0.2s;
+    font-family: inherit;
+}
+
+.logout-btn:hover {
+    background: #c0392b;
+}

@@ -18,9 +18,9 @@ public class CreateRecipeRequest {
     @Min(value = 1, message = "Preparation time must be greater than or equal to 1")
     private Integer preparationTime;
     private String image;
-    private List<String> ingredients;
+    private List<IngredientRequest> ingredients;
     private List<String> steps;
-    private List<String> nutritionalValues;
+    private List<NutritionalValueRequest> nutritionalValues;
     public CreateRecipeRequest() {}
 
     public String getName() {
@@ -38,13 +38,13 @@ public class CreateRecipeRequest {
     public String getImage() {
         return image;
     }
-    public List<String> getIngredients() {
+    public List<IngredientRequest> getIngredients() {
         return ingredients;
     }
     public List<String> getSteps() {
         return steps;
     }
-    public List<String> getNutritionalValues() {
+    public List<NutritionalValueRequest> getNutritionalValues() {
         return nutritionalValues;
     }
     public void setName(String name) {
@@ -62,13 +62,13 @@ public class CreateRecipeRequest {
     public void setImage(String image) {
         this.image = image;
     }
-    public void setIngredients(List<String> ingredients) {
+    public void setIngredients(List<IngredientRequest> ingredients) {
         this.ingredients = ingredients;
     }
     public void setSteps(List<String> steps) {
         this.steps = steps;
     }
-    public void setNutritionalValues(List<String> nutritionalValues) {
+    public void setNutritionalValues(List<NutritionalValueRequest> nutritionalValues) {
         this.nutritionalValues = nutritionalValues;
     }
 }

@@ -2,6 +2,8 @@ import Navbar from "./Navbar";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./UserProfile.css";
+import API_BASE from "../config.js"
+import {isAdmin} from "../utils/auth.js";
 
 export default function Profile() {
     const navigate = useNavigate();
@@ -17,10 +19,15 @@ export default function Profile() {
         const parsedUser = JSON.parse(stored);
         setUser(parsedUser);
 
-        fetch(`http://localhost:8080/api/recipes/user/${parsedUser.id}`)
+        fetch(`${API_BASE}/api/recipes/user/${parsedUser.id}`)
             .then(res => res.json())
             .then(data => setRecipes(data));
     }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem("user");
+        navigate("/login");
+    };
 
     if (!user) return null;
 
@@ -55,26 +62,32 @@ export default function Profile() {
                             </div>
                         </div>
                     </div>
+                    {isAdmin() && (
+                        <button className= "admin-panel-btn" onClick={() => navigate("/admin")}>Admin Panel</button>
+                    )}
+                    <button className="logout-btn" onClick={handleLogout}>Logout</button>
 
-                    <div className="profile-recipes">
-                        <h3>My Recipes</h3>
-                        {recipes.length === 0 ? (
-                            <p className="no-recipes">No recipes yet. <span onClick={() => navigate("/add")} style={{cursor: "pointer", textDecoration: "underline"}}>Add one!</span></p>
-                        ) : (
-                            <div className="recipe-grid">
-                                {recipes.map(recipe => (
-                                    <div key={recipe.id} className="recipe-card" onClick={() => navigate(`/recipe/${recipe.id}`)}>
-                                        <img src={recipe.image} alt={recipe.name} className="recipe-card-img" />
-                                        <div className="recipe-card-info">
-                                            <h4>{recipe.name}</h4>
-                                            <span className="recipe-card-category">{recipe.category}</span>
-                                            <span className="recipe-card-servings">🍽 {recipe.servings} servings</span>
+                    {!isAdmin() && (
+                        <div className="profile-recipes">
+                            <h3>My Recipes</h3>
+                            {recipes.length === 0 ? (
+                                <p className="no-recipes">No recipes yet. <span onClick={() => navigate("/add")} style={{cursor: "pointer", textDecoration: "underline"}}>Add one!</span></p>
+                            ) : (
+                                <div className="recipe-grid">
+                                    {recipes.map(recipe => (
+                                        <div key={recipe.id} className="recipe-card" onClick={() => navigate(`/recipe/${recipe.id}`)}>
+                                            <img src={recipe.image} alt={recipe.name} className="recipe-card-img" />
+                                            <div className="recipe-card-info">
+                                                <h4>{recipe.name}</h4>
+                                                <span className="recipe-card-category">{recipe.category}</span>
+                                                <span className="recipe-card-servings">🍽 {recipe.servings} servings</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                         )}
-                    </div>
                 </div>
             </div>
         </>

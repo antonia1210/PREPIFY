@@ -1,6 +1,8 @@
 package com.anto.backend.controller;
 
 import com.anto.backend.dto.CreateRecipeRequest;
+import com.anto.backend.dto.IngredientRequest;
+import com.anto.backend.dto.NutritionalValueRequest;
 import com.anto.backend.dto.UpdateRecipeRequest;
 import com.anto.backend.model.Recipe;
 import com.anto.backend.service.RecipeGeneratorService;
@@ -66,8 +68,8 @@ public class RecipeGraphQLController {
     public Recipe createRecipe(
             @Argument String name, @Argument String category,
             @Argument int servings, @Argument int preparationTime,
-            @Argument String image, @Argument List<String> ingredients,
-            @Argument List<String> steps, @Argument List<String> nutritionalValues) {
+            @Argument String image, @Argument List<IngredientRequest> ingredients,
+            @Argument List<String> steps, @Argument List<NutritionalValueRequest> nutritionalValues) {
         CreateRecipeRequest request = new CreateRecipeRequest();
         request.setName(name);
         request.setCategory(category);
@@ -77,15 +79,15 @@ public class RecipeGraphQLController {
         request.setIngredients(ingredients);
         request.setSteps(steps);
         request.setNutritionalValues(nutritionalValues);
-        return recipeService.create(request);
+        return recipeService.create(request, null);
     }
 
     @MutationMapping
     public Recipe updateRecipe(
             @Argument int id, @Argument String name, @Argument String category,
             @Argument int servings, @Argument int preparationTime,
-            @Argument String image, @Argument List<String> ingredients,
-            @Argument List<String> steps, @Argument List<String> nutritionalValues) {
+            @Argument String image, @Argument List<IngredientRequest> ingredients,
+            @Argument List<String> steps, @Argument List<NutritionalValueRequest> nutritionalValues) {
         UpdateRecipeRequest request = new UpdateRecipeRequest();
         request.setName(name);
         request.setCategory(category);
@@ -99,8 +101,8 @@ public class RecipeGraphQLController {
     }
 
     @MutationMapping
-    public boolean deleteRecipe(@Argument int id) {
-        recipeService.deleteById(id);
+    public boolean deleteRecipe(@Argument int id, @Argument Integer userId) {
+        recipeService.deleteById(id, userId);
         return true;
     }
 

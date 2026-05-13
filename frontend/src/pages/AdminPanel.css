@@ -1,0 +1,58 @@
+.admin-container {
+    padding: 2rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    background: #F5EFE6;
+}
+
+.admin-title {
+    color: #562121;
+    margin-bottom: 1.5rem;
+}
+
+.no-suspicious {
+    color: #999;
+    font-size: 1rem;
+}
+
+.suspicious-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.suspicious-table thead tr {
+    background: #562121;
+    color: white;
+}
+
+.suspicious-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+}
+
+.suspicious-table td {
+    padding: 12px 16px;
+}
+
+.row-even {
+    background: #ffffff;
+}
+
+.row-odd {
+    background: #faf0f0;
+}
+
+.reason {
+    color: #c0392b;
+    font-weight: 500;
+}
+
+.violations {
+    text-align: center;
+    font-weight: bold;
+    color: #562121;
+}

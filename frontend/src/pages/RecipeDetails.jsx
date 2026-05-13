@@ -4,25 +4,20 @@ import Navbar from "./Navbar";
 import {useEffect} from "react";
 import { useState } from "react";
 import {getCookie, setCookie} from "../utils/cookies";
-import {fontSize} from "jsdom/lib/generated/css-property-descriptors.js";
+import { hasPermission, isAdmin, getUser } from "../utils/auth";
+import API_BASE from "../config.js"
+
 export default function RecipeDetails() {
     const [selectedRating, setSelectedRating] = useState(0);
     const [recipe, setRecipe] = useState(null);
     const { id } = useParams();
     const [loading, setLoading] = useState(true);
 
-    const [currentUser, setCurrentUser] = useState(null);
-    useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-            setCurrentUser(JSON.parse(storedUser));
-        }
-    }, []);
     const navigate = useNavigate();
     useEffect(() => {
         const fetchRecipe = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/api/recipes/${id}`);
+                const response = await fetch(`${API_BASE}/api/recipes/${id}`);
                 if (!response.ok) {
                     throw new Error("Failed to fetch recipe");
                 }
@@ -45,9 +40,8 @@ export default function RecipeDetails() {
         const confirmDelete = window.confirm("Are you sure you want to delete this recipe?");
         if (!confirmDelete) return;
         try {
-            const response = await fetch(`http://localhost:8080/api/recipes/${recipe.id}`, {
-                method: "DELETE"
-            });
+            const response = await fetch(`${API_BASE}/api/recipes/${recipe.id}?userId=${getUser()?.id}`, {
+                method: "DELETE"});
             if (!response.ok) {
                 throw new Error("Failed to delete recipe");
             }
@@ -59,7 +53,7 @@ export default function RecipeDetails() {
     };
     const handleRate = async (value) => {
         try {
-            const response = await fetch(`http://localhost:8080/api/recipes/${recipe.id}/rating`, {
+            const response = await fetch(`${API_BASE}/api/recipes/${recipe.id}/rating`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -88,7 +82,7 @@ return (
             <div className="top-section">
             <h1 className="logo">PREPIFY</h1>
                 <div className="top-actions">
-            {currentUser?.id == recipe.userId && (
+            {(isAdmin() || getUser()?.id == recipe.userId) && (
                     <>
                     <button onClick={() => navigate(`/edit/${recipe.id}`)}>/Edit Recipe</button>
                     <button onClick={handleDelete}>-Delete Recipe</button>
@@ -97,7 +91,7 @@ return (
                 </div>
             </div>
             <h2 className="title">{recipe.name}</h2>
-            <p>recipe by {recipe.authorName}</p>
+            <p className="author-name">recipe by <strong>{recipe.authorName}</strong></p>
             <div className="content">
                 <div className="left-content">
                     {recipe.image ? (
@@ -119,7 +113,9 @@ return (
                     <h3>🧾 Ingredients:</h3>
                     <ul>
                         {recipe.ingredients.map((ingredient, index) => (
-                            <li key={index}>{ingredient}</li>
+                            <li key={index}>
+                                {ingredient.quantity} {ingredient.unit} {ingredient.name}
+                            </li>
                         ))}
                     </ul>
 
@@ -136,10 +132,12 @@ return (
                 <h3>💪 Nutritional values:</h3>
                 <div className="nutrition">
                     {recipe.nutritionalValues.map((value, index) => (
-                        <div className="nutrition-card" key={index}>{value}</div>
+                        <div className="nutrition-card" key={index}>
+                            {value.name}: {value.amount} {value.unit}
+                        </div>
                     ))}
                 </div>
-                {currentUser.id != recipe.userId && (
+                {getUser()?.id != recipe.userId && (
                     <>
                 <h3>Rate this recipe
                     <div className="rating">
@@ -169,6 +167,11 @@ return (
             </div>
                 <div className="bottom-actions">
                     <button className="back" onClick={() => navigate("/feed")}>Back to recipes</button>
+                    {getUser()?.id !== recipe.userId && recipe.userId && (
+                        <button className="chat-author-btn" onClick={() => navigate(`/chat/${recipe.userId}`)}>
+                            💬 Chat with {recipe.authorName}
+                        </button>
+                    )}
                     <button className="add">Add to plan</button>
                 </div>
             </div>

@@ -7,6 +7,8 @@ import {getCookie, setCookie} from "../utils/cookies";
 import { useOnlineStatus } from "../utils/useOnlineStatus";
 import { useOfflineQueue } from "../utils/useOfflineQueue";
 import { connectRecipeSocket } from "../utils/recipeSocket";
+import { isAdmin, getUser } from "../utils/auth";
+import API_BASE from "../config.js"
 
 export default function Feed() {
     const navigate = useNavigate();
@@ -28,13 +30,6 @@ export default function Feed() {
     const [category, setCategory] = useState("");
     const [sortBy, setSortBy] = useState("");
 
-    const [currentUser, setCurrentUser] = useState(null);
-
-    useEffect(() => {
-        const stored = localStorage.getItem("user");
-        if (stored) setCurrentUser(JSON.parse(stored));
-    }, []);
-
     useEffect(() => {
         const init = async () => {
             prefetchedRef.current = {};
@@ -55,7 +50,7 @@ export default function Feed() {
                     const params = new URLSearchParams();
                     if (category) params.append("category", category);
                     if (sortBy) params.append("sortBy", sortBy);
-                    const response = await fetch(`http://localhost:8080/api/recipes/filter?${params.toString()}`);
+                    const response = await fetch(`${API_BASE}/api/recipes/filter?${params.toString()}`);
                     const data = await response.json();
                     if (Array.isArray(data)) {
                         setRecipes(data);
@@ -64,7 +59,7 @@ export default function Feed() {
                     return;
                 }
                 if (query) {
-                    const response = await fetch(`http://localhost:8080/api/recipes/search?query=${query}`);
+                    const response = await fetch(`${API_BASE}/api/recipes/search?query=${query}`);
                     const data = await response.json();
                     if (Array.isArray(data)) {
                         setRecipes(data);
@@ -73,7 +68,7 @@ export default function Feed() {
                     return;
                 }
 
-                const response = await fetch(`http://localhost:8080/api/recipes?page=0&size=${recipesPerPage}`);
+                const response = await fetch(`${API_BASE}/api/recipes?page=0&size=${recipesPerPage}`);
                 const data = await response.json();
                 prefetchedRef.current[0] = data;
                 if (data.length < recipesPerPage) setHasMore(false);
@@ -125,7 +120,7 @@ export default function Feed() {
         if (prefetchedRef.current[pageNum]) {
             return prefetchedRef.current[pageNum];
         }
-        const response = await fetch(`http://localhost:8080/api/recipes?page=${pageNum}&size=${recipesPerPage}`);
+        const response = await fetch(`${API_BASE}/api/recipes?page=${pageNum}&size=${recipesPerPage}`);
         const data = await response.json();
         prefetchedRef.current[pageNum] = data;
         return data;
@@ -177,7 +172,7 @@ export default function Feed() {
         }
 
         try {
-            const response = await fetch(`http://localhost:8080/api/recipes/${id}`, { method: "DELETE" });
+            const response = await fetch(`${API_BASE}/api/recipes/${id}?userId=${getUser()?.id}`, {method: "DELETE"});
             if (!response.ok) throw new Error("Failed to delete");
             setRecipes(prev => prev.filter(r => r.id !== id));
             localStorage.removeItem(`recipe_${id}`);
@@ -186,7 +181,7 @@ export default function Feed() {
         }
     };
     const startGenerator = async () => {
-        await fetch("http://localhost:8080/api/recipes/generator/start", {
+        await fetch(`${API_BASE}/api/recipes/generator/start`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -197,7 +192,7 @@ export default function Feed() {
     };
 
     const stopGenerator = async () => {
-        await fetch("http://localhost:8080/api/recipes/generator/stop", {
+        await fetch(`${API_BASE}/api/recipes/generator/stop`, {
             method: "POST"
         });
     };
@@ -302,7 +297,7 @@ export default function Feed() {
                                    style={{cursor: "pointer", textDecoration: "underline"}}>
                                 View
                             </label>
-                            {(currentUser?.id == recipe.userId ||!recipe.userId )&& (
+                            {(isAdmin() || getUser()?.id == recipe.userId)&& (
                                     <>
                                 <label className="edit-button" onClick={() => navigate(`/edit/${recipe.id}`)}
                                        style={{cursor: "pointer", textDecoration: "underline"}}>

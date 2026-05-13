@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useOnlineStatus } from "./useOnlineStatus";
+import API_BASE from "../config.js"
 
 export function useOfflineQueue() {
     const isOnline = useOnlineStatus();
@@ -19,7 +20,7 @@ export function useOfflineQueue() {
             for (const op of pending) {
                 try {
                     if (op.type === "CREATE") {
-                        await fetch("http://localhost:8080/api/recipes", {
+                        await fetch(`${API_BASE}/api/recipes`, {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify(op.payload)
@@ -29,14 +30,14 @@ export function useOfflineQueue() {
                             cached.filter(r => !r.id?.toString().startsWith("temp_"))
                         ));
                     } else if (op.type === "UPDATE") {
-                        await fetch(`http://localhost:8080/api/recipes/${op.id}`, {
+                        await fetch(`${API_BASE}/api/recipes/${op.id}`, {
                             method: "PUT",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify(op.payload)
                         });
                         localStorage.setItem(`recipe_${op.id}`, JSON.stringify(op.payload));
                     } else if (op.type === "DELETE") {
-                        await fetch(`http://localhost:8080/api/recipes/${op.id}`, {
+                        await fetch(`${API_BASE}/api/recipes/${op.id}`, {
                             method: "DELETE"
                         });
                         localStorage.removeItem(`recipe_${op.id}`);

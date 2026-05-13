@@ -1,24 +1,44 @@
 package com.anto.backend.model;
 
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Table(name = "recipes")
 public class Recipe {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     private String name;
     private String category;
     private int servings;
     private int preparationTime;
     private String image;
-    private List<String> ingredients = new ArrayList<>();
-    private List<String> steps = new ArrayList<>();
-    private List<String> nutritionalValues = new ArrayList<>();
-    private List<Integer> ratings = new ArrayList<>();
-    private Integer userId;
     private String authorName;
 
+    @Column(name = "user_id")
+    private Integer userId;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "recipe_steps", joinColumns = @JoinColumn(name = "recipe_id"))
+    @Column(name = "step")
+    private List<String> steps = new ArrayList<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "recipe_ratings", joinColumns = @JoinColumn(name = "recipe_id"))
+    @Column(name = "rating")
+    private List<Integer> ratings = new ArrayList<>();
+
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<Ingredient> ingredients = new ArrayList<>();
+
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private List<NutritionalValue> nutritionalValues = new ArrayList<>();
+
     public Recipe() {}
-    public Recipe(Integer id, String name, String category, int servings, int preparationTime, String image, List<String> ingredients, List<String> steps, List<String> nutritionalValues, Integer userId, String authorName)
+    public Recipe(Integer id, String name, String category, int servings, int preparationTime, String image, List<Ingredient> ingredients, List<String> steps, List<NutritionalValue> nutritionalValues, Integer userId, String authorName)
     {
         this.id = id;
         this.name = name;
@@ -62,13 +82,11 @@ public class Recipe {
     public String getImage() {
         return image;
     }
-    public List<String> getIngredients() {
-        return ingredients;
-    }
+    public List<Ingredient> getIngredients() { return ingredients; }
     public List<String> getSteps() {
         return steps;
     }
-    public List<String> getNutritionalValues() {
+    public List<NutritionalValue> getNutritionalValues() {
         return nutritionalValues;
     }
     public List<Integer> getRatings() {return ratings;}
@@ -89,24 +107,24 @@ public class Recipe {
     public void setImage(String image) {
         this.image = image;
     }
-    public void setIngredients(List<String> ingredients) {
-        this.ingredients = ingredients;
+    public void setIngredients(List<Ingredient> ingredients) {
+        this.ingredients = new ArrayList<>(ingredients);
     }
     public void setSteps(List<String> steps) {
-        this.steps = steps;
+        this.steps = new ArrayList<>(steps);
     }
-    public void setNutritionalValues(List<String> nutritionalValues) {
-        this.nutritionalValues = nutritionalValues;
+    public void setNutritionalValues(List<NutritionalValue> nutritionalValues) {
+        this.nutritionalValues = new ArrayList<>(nutritionalValues);
     }
+
     public void addRating(int rating) {
         if (rating < 1 || rating > 5) {
             throw new IllegalArgumentException("Rating must be between 1 and 5");
         }
-        if (this.ratings == null) {
-            this.ratings = new ArrayList<>();
-        }
+        this.ratings = new ArrayList<>(this.ratings);
         this.ratings.add(rating);
     }
+
     public double getAverageRating() {
         if (ratings == null || ratings.isEmpty()) return 0;
         return ratings.stream()

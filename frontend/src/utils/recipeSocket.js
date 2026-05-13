@@ -1,9 +1,10 @@
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client/dist/sockjs";
+import API_BASE from "../config.js"
 
 export function connectRecipeSocket(onMessage) {
     const client = new Client({
-        webSocketFactory: () => new SockJS("http://localhost:8080/ws"),
+        webSocketFactory: () => new SockJS(`${API_BASE}/ws`),
         reconnectDelay: 5000,
         debug: () => {},
         shouldReconnect: () => navigator.onLine,

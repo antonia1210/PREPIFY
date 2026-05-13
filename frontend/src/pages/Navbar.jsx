@@ -2,6 +2,7 @@ import "./Navbar.css";
 import {useNavigate} from "react-router-dom";
 import {setCookie} from "../utils/cookies";
 import {useEffect, useState} from "react";
+import {isAdmin} from "../utils/auth";
 
 export default function Navbar() {
     const navigate = useNavigate();
@@ -27,8 +28,11 @@ export default function Navbar() {
                 <button>Shopping List</button>
                 <button onClick={() => navigate("/statistics")}>Statistics</button>
             </div>
-            <div className="profile-circle" onClick={() => navigate("/user-profile")}>
-                {user.name?.charAt(0).toUpperCase()}
+            <div className="nav-right">
+                <span className="chat-icon" onClick={() => navigate("/chat")}>💬</span>
+                <div className="profile-circle" onClick={() => navigate("/user-profile")}>
+                    {user.name?.charAt(0).toUpperCase()}
+                </div>
             </div>
         </div>
     );

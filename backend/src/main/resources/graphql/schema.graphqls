@@ -11,7 +11,17 @@ type Recipe {
     ratings: [Int]
     averageRating: Float
 }
+input IngredientInput {
+    name: String!
+    quantity: Float!
+    unit: String!
+}
 
+input NutritionalValueInput {
+    name: String!
+    amount: Float!
+    unit: String!
+}
 type CategoryCount {
     name: String
     count: Int
@@ -34,9 +44,9 @@ type Mutation {
         servings: Int!
         preparationTime: Int!
         image: String
-        ingredients: [String]
+        ingredients: [IngredientInput]
         steps: [String]
-        nutritionalValues: [String]
+        nutritionalValues: [NutritionalValueInput]
     ): Recipe
 
     updateRecipe(
@@ -46,12 +56,12 @@ type Mutation {
         servings: Int!
         preparationTime: Int!
         image: String
-        ingredients: [String]
+        ingredients: [IngredientInput]
         steps: [String]
-        nutritionalValues: [String]
+        nutritionalValues: [NutritionalValueInput]
     ): Recipe
 
-    deleteRecipe(id: ID!): Boolean
+    deleteRecipe(id: ID!, userId:Int!): Boolean
     addRating(id: ID!, rating: Int!): Recipe
     startFaker: Boolean
     stopFaker: Boolean

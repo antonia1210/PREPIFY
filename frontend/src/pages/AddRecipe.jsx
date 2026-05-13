@@ -6,6 +6,9 @@ import {validateRecipe} from "../validation/recipeValidation.js";
 import {setCookie} from "../utils/cookies";
 import { useOnlineStatus } from "../utils/useOnlineStatus";
 import { useOfflineQueue } from "../utils/useOfflineQueue";
+import { getUser } from "../utils/auth";
+import API_BASE from "../config.js"
+
 export default function AddRecipe() {
     const isOnline = useOnlineStatus();
     const { enqueue } = useOfflineQueue();
@@ -18,10 +21,58 @@ export default function AddRecipe() {
                 servings: "",
                 preparationTime: "",
                 image: "",
-                ingredients: "",
-                steps: "",
-                nutritionalValues: "",
     });
+    const [ingredients, setIngredients] = useState([
+        { name: "", quantity: "", unit: "" }
+    ]);
+
+    const [nutritionalValues, setNutritionalValues] = useState([
+        { name: "", amount: "", unit: "" }
+    ]);
+
+    const [steps, setSteps] = useState([""]);
+
+    const handleIngredientChange = (index, field, value) => {
+        const updated = [...ingredients];
+        updated[index][field] = value;
+        setIngredients(updated);
+    };
+
+    const addIngredient = () => {
+        setIngredients([...ingredients, { name: "", quantity: "", unit: "" }]);
+    };
+
+    const removeIngredient = (index) => {
+        setIngredients(ingredients.filter((_, i) => i !== index));
+    };
+
+    const handleNutritionalChange = (index, field, value) => {
+        const updated = [...nutritionalValues];
+        updated[index][field] = value;
+        setNutritionalValues(updated);
+    }
+
+    const addNutritionalValue = () => {
+        setNutritionalValues([...nutritionalValues, { name: "", amount: "", unit: "" }]);
+    }
+
+    const removeNutritionalValue = (index) => {
+        setNutritionalValues(nutritionalValues.filter((_, i) => i !== index));
+    }
+
+    const handleStepChange = (index, value) => {
+        const updated = [...steps];
+        updated[index] = value;
+        setSteps(updated);
+    };
+
+    const addStep = () => {
+        setSteps([...steps, ""]);
+    };
+
+    const removeStep = (index) => {
+        setSteps(steps.filter((_, i) => i !== index));
+    };
 
     const handleChange = (e) => {
         setForm({
@@ -33,7 +84,7 @@ export default function AddRecipe() {
         if (!id) return;
         const fetchRecipe = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/api/recipes/${id}`);
+                const response = await fetch(`${API_BASE}/api/recipes/${id}`);
                 if (!response.ok) throw new Error("Failed to fetch recipe");
                 const data = await response.json();
                 localStorage.setItem(`recipe_${id}`, JSON.stringify(data));
@@ -52,10 +103,24 @@ export default function AddRecipe() {
                 servings: Number(data.servings) || "",
                 preparationTime: Number(data.preparationTime) || "",
                 image: data.image || "",
-                ingredients: Array.isArray(data.ingredients) ? data.ingredients.join("\n") : "",
-                steps: Array.isArray(data.steps) ? data.steps.join("\n") : "",
-                nutritionalValues: Array.isArray(data.nutritionalValues) ? data.nutritionalValues.join("\n") : "",
             });
+            if (data.ingredients && data.ingredients.length > 0) {
+                setIngredients(data.ingredients.map(i => ({
+                    name: i.name || "",
+                    quantity: i.quantity || "",
+                    unit: i.unit || ""
+                })));
+            }
+            if (data.steps && data.steps.length > 0) {
+                setSteps(data.steps);
+            }
+            if (data.nutritionalValues && data.nutritionalValues.length > 0) {
+                setNutritionalValues(data.nutritionalValues.map(n => ({
+                    name: n.name || "",
+                    amount: n.amount || "",
+                    unit: n.unit || ""
+                })));
+            }
         };
 
         fetchRecipe();
@@ -74,18 +139,17 @@ export default function AddRecipe() {
             servings: form.servings,
             preparationTime: form.preparationTime,
             image: form.image,
-            ingredients: form.ingredients
-                .split("\n")
-                .map(item => item.trim())
-                .filter(item => item !== ""),
-            steps: form.steps
-                .split("\n")
-                .map(item => item.trim())
-                .filter(item => item !== ""),
-            nutritionalValues: form.nutritionalValues
-                .split("\n")
-                .map(item => item.trim())
-                .filter(item => item !== ""),
+            ingredients: ingredients.filter(i => i.name).map(i => ({
+                name: i.name,
+                quantity: parseFloat(i.quantity),
+                unit: i.unit
+            })),
+            steps: steps.filter(s => s.trim()).map(s => s.trim()),
+            nutritionalValues: nutritionalValues.filter(n => n.name).map(n => ({
+                name: n.name,
+                amount: parseFloat(n.amount),
+                unit: n.unit
+            })),
         };
         if (!isOnline) {
             if (id) {
@@ -104,7 +168,7 @@ export default function AddRecipe() {
         try {
             let response;
             if (id) {
-                response = await fetch(`http://localhost:8080/api/recipes/${id}`, {
+                response = await fetch(`${API_BASE}/api/recipes/${id}?userId=${getUser()?.id}`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
@@ -112,13 +176,11 @@ export default function AddRecipe() {
                     body: JSON.stringify(recipeData),
                 });
             } else {
-                response = await fetch("http://localhost:8080/api/recipes", {
+                response = await fetch(`${API_BASE}/api/recipes?userId=${getUser()?.id}`, {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(recipeData),
-                })
+                });
             }
             if (!response.ok) {
                 throw new Error("Failed to add recipe");
@@ -164,13 +226,65 @@ export default function AddRecipe() {
 
                         <div className="right-column">
                             <label>Ingredients</label>
-                            <textarea name="ingredients" value={form.ingredients} onChange={handleChange} />
+                            {ingredients.map((ing, index) => (
+                                <div key={index} className="ingredient-row">
+                                    <input
+                                        placeholder="name"
+                                        value={ing.name}
+                                        onChange={(e) => handleIngredientChange(index, "name", e.target.value)}
+                                    />
+                                    <input
+                                        type="number"
+                                        placeholder="quantity"
+                                        value={ing.quantity}
+                                        onChange={(e) => handleIngredientChange(index, "quantity", e.target.value)}
+                                    />
+                                    <input
+                                        placeholder="unit"
+                                        value={ing.unit}
+                                        onChange={(e) => handleIngredientChange(index, "unit", e.target.value)}
+                                    />
+                                    <button type="button" onClick={() => removeIngredient(index)}>✕</button>
+                                </div>
+                            ))}
+                            <button type="button" className="add-row-btn" onClick={addIngredient}>+ Add Ingredient</button>
 
                             <label>Steps</label>
-                            <textarea name="steps" value={form.steps} onChange={handleChange} />
+                            {steps.map((step, index) => (
+                                <div key={index} className="ingredient-row">
+                                    <input
+                                        placeholder={`Step ${index + 1}`}
+                                        value={step}
+                                        onChange={(e) => handleStepChange(index, e.target.value)}
+                                    />
+                                    <button type="button" onClick={() => removeStep(index)}>✕</button>
+                                </div>
+                            ))}
+                            <button type="button" className="add-row-btn" onClick={addStep}>+ Add Step</button>
 
                             <label>Nutritional Values</label>
-                            <textarea name="nutritionalValues" value={form.nutritionalValues} onChange={handleChange} />
+                            {nutritionalValues.map((nutr, index) => (
+                                <div key={index} className="ingredient-row">
+                                    <input
+                                        placeholder="name"
+                                        value={nutr.name}
+                                        onChange={(e) => handleNutritionalChange(index, "name", e.target.value)}
+                                    />
+                                    <input
+                                        type="number"
+                                        placeholder="amount"
+                                        value={nutr.amount}
+                                        onChange={(e) => handleNutritionalChange(index, "amount", e.target.value)}
+                                    />
+                                    <input
+                                        placeholder="unit"
+                                        value={nutr.unit}
+                                        onChange={(e) => handleNutritionalChange(index, "unit", e.target.value)}
+                                    />
+                                    <button type="button" onClick={() => removeNutritionalValue(index)}>✕</button>
+                                </div>
+                            ))}
+                            <button type="button" className="add-row-btn" onClick={addNutritionalValue}>+ Add Nutritional Value</button>
                         </div>
                     </div>
                     {form.image && (

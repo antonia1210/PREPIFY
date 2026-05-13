@@ -4,6 +4,7 @@ import {PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer} from "rechart
 const COLORS = ["#E5989B", "#B5C9D9", "#C08497", "#EED6D3", "#F6BD60", "#A8D5BA"];
 import "./Statistics.css"
 import { connectRecipeSocket } from "../utils/recipeSocket";
+import API_BASE from "../config.js"
 
 function getAverage(ratings) {
     if (!ratings || ratings.length === 0) return 0;
@@ -18,21 +19,21 @@ export default function Statistics() {
 
     const fetchStatistics = async () => {
         try {
-            const recipesResponse = await fetch("http://localhost:8080/api/recipes?page=0&size=100");
+            const recipesResponse = await fetch(`${API_BASE}/api/recipes?page=0&size=100`);
             const recipesData = await recipesResponse.json();
             setRecipes(recipesData);
 
             const [categoryResponse, countResponse, averageResponse] = await Promise.all([
-                fetch("http://localhost:8080/api/recipes/stats/by-category"),
-                fetch("http://localhost:8080/api/recipes/stats/total-count"),
-                fetch("http://localhost:8080/api/recipes/stats/average-rating"),
+                fetch(`${API_BASE}/api/recipes/stats/by-category`),
+                fetch(`${API_BASE}/api/recipes/stats/total-count`),
+                fetch(`${API_BASE}/api/recipes/stats/average-rating`),
             ]);
-            const usersResponse = await fetch("http://localhost:8080/api/users");
+            const usersResponse = await fetch(`${API_BASE}/api/users`);
             const usersData = await usersResponse.json();
 
             const userCounts = await Promise.all(
                 usersData.map(async (user) => {
-                    const countRes = await fetch(`http://localhost:8080/api/recipes/user/${user.id}/count`);
+                    const countRes = await fetch(`${API_BASE}/api/recipes/user/${user.id}/count`);
                     const count = await countRes.json();
                     return { name: user.username, value: count };
                 })
