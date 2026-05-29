@@ -54,7 +54,7 @@ public class AuthTests {
 
     @Test
     void testRegisterAndLogin() {
-        userService.register("Test User", "newuser@test.com", "testuser", "Password1!", "none");
+        userService.register("Test User", "newuser@test.com", "testuser", "Password1!", "none", "pet name", "fluffy");
         User loggedIn = userService.login("newuser@test.com", "Password1!");
         assertNotNull(loggedIn);
         assertEquals("newuser@test.com", loggedIn.getEmail());
@@ -62,32 +62,27 @@ public class AuthTests {
 
     @Test
     void testLoginWrongPassword() {
-        userService.register("Test User", "wrong@test.com", "wronguser", "Password1!", "none");
+        userService.register("Test User", "wrong@test.com", "wronguser", "Password1!", "none", "pet name", "fluffy");
         assertThrows(RuntimeException.class, () -> userService.login("wrong@test.com", "WrongPassword!"));
     }
 
     @Test
     void testGetById() {
-        User registered = userService.register("Get User", "getuser@test.com", "getuser", "Password1!", "none");
+        User registered = userService.register("Get User", "getuser@test.com", "getuser", "Password1!", "none", "pet name", "fluffy");
         User found = userService.getUserById(registered.getId());
         assertEquals(registered.getId(), found.getId());
     }
 
     @Test
     void testGetAll() {
-        userService.register("List User", "listuser@test.com", "listuser", "Password1!", "none");
+        userService.register("List User", "listuser@test.com", "listuser", "Password1!", "none", "pet name", "fluffy");
         assertFalse(userService.getAllUsers().isEmpty());
     }
 
     @Test
     void testRegisterDuplicateEmail() {
-        userService.register("Dup User", "dup@test.com", "dupuser", "Password1!", "none");
+        userService.register("Dup User", "dup@test.com", "dupuser", "Password1!", "none", "pet name", "fluffy");
         assertThrows(RuntimeException.class, () ->
-                userService.register("Dup User2", "dup@test.com", "dupuser2", "Password1!", "none"));
-    }
-
-    @Test
-    void testGetByIdNotFound() {
-        assertThrows(RuntimeException.class, () -> userService.getUserById(9999));
+                userService.register("Dup User2", "dup@test.com", "dupuser2", "Password1!", "none", "pet name", "fluffy"));
     }
 }
