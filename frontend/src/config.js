@@ -1,2 +1,2 @@
-const API_BASE = "https://192.168.2.215:8443";
+const API_BASE = "";
 export default API_BASE;
