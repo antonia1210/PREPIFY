@@ -1,25 +1,37 @@
 package com.anto.backend.service;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 
-import jakarta.mail.internet.MimeMessage;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class EmailService {
 
-    private final JavaMailSender mailSender;
+    private final RestClient brevoClient;
+    private final String senderEmail;
+    private final String senderName;
+    private final String frontendBaseUrl;
 
-    @Value("${spring.mail.username}")
-    private String fromEmail;
+    public EmailService(
+            @Value("${brevo.api-key}") String apiKey,
+            @Value("${brevo.sender-email}") String senderEmail,
+            @Value("${brevo.sender-name:Prepify}") String senderName,
+            @Value("${frontend.base-url}") String frontendBaseUrl) {
 
-    @Value("${frontend.base-url}")
-    private String frontendBaseUrl;
+        this.senderEmail = senderEmail;
+        this.senderName = senderName;
+        this.frontendBaseUrl = frontendBaseUrl;
 
-    public EmailService(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
+        this.brevoClient = RestClient.builder()
+                .baseUrl("https://api.brevo.com/v3")
+                .defaultHeader("api-key", apiKey)
+                .defaultHeader("accept", "application/json")
+                .defaultHeader("content-type", "application/json")
+                .build();
     }
 
     public void sendMagicLink(String toEmail, String token) {
@@ -62,20 +74,6 @@ public class EmailService {
         sendHtml(toEmail, subject, body);
     }
 
-    private void sendHtml(String to, String subject, String htmlBody) {
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-            helper.setFrom(fromEmail, "Prepify");
-            helper.setTo(to);
-            helper.setSubject(subject);
-            helper.setText(htmlBody, true);
-            mailSender.send(message);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to send email to " + to, e);
-        }
-    }
-
     public void sendOtp(String toEmail, String code) {
         String subject = "Your Prepify login code";
         String body = """
@@ -93,5 +91,32 @@ public class EmailService {
             </div>
             """.formatted(code);
         sendHtml(toEmail, subject, body);
+    }
+
+    private void sendHtml(String to, String subject, String htmlBody) {
+        Map<String, Object> payload = Map.of(
+                "sender", Map.of("name", senderName, "email", senderEmail),
+                "to", List.of(Map.of("email", to)),
+                "subject", subject,
+                "htmlContent", htmlBody
+        );
+
+        try {
+            brevoClient.post()
+                    .uri("/smtp/email")
+                    .body(payload)
+                    .retrieve()
+                    // Surface Brevo's actual error body instead of swallowing it,
+                    // so failures show up clearly in your Railway logs.
+                    .onStatus(status -> status.isError(), (req, res) -> {
+                        String errorBody = new String(
+                                res.getBody().readAllBytes(), StandardCharsets.UTF_8);
+                        throw new RuntimeException(
+                                "Brevo API error " + res.getStatusCode() + ": " + errorBody);
+                    })
+                    .toBodilessEntity();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to send email to " + to, e);
+        }
     }
 }
