@@ -6,6 +6,7 @@ import { useState } from "react";
 import {getCookie, setCookie} from "../utils/cookies";
 import { hasPermission, isAdmin, getUser } from "../utils/auth";
 import API_BASE from "../config.js"
+import {authHeaders} from "../utils/auth";
 
 export default function RecipeDetails() {
     const [selectedRating, setSelectedRating] = useState(0);
@@ -17,7 +18,7 @@ export default function RecipeDetails() {
     useEffect(() => {
         const fetchRecipe = async () => {
             try {
-                const response = await fetch(`${API_BASE}/api/recipes/${id}`);
+                const response = await fetch(`${API_BASE}/api/recipes/${id}`, {headers: authHeaders()});
                 if (!response.ok) {
                     throw new Error("Failed to fetch recipe");
                 }
@@ -41,7 +42,9 @@ export default function RecipeDetails() {
         if (!confirmDelete) return;
         try {
             const response = await fetch(`${API_BASE}/api/recipes/${recipe.id}?userId=${getUser()?.id}`, {
-                method: "DELETE"});
+                method: "DELETE",
+                headers: authHeaders()
+            });
             if (!response.ok) {
                 throw new Error("Failed to delete recipe");
             }
@@ -51,13 +54,12 @@ export default function RecipeDetails() {
             alert("Could not delete recipe.");
         }
     };
+
     const handleRate = async (value) => {
         try {
             const response = await fetch(`${API_BASE}/api/recipes/${recipe.id}/rating`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: authHeaders(),
                 body: JSON.stringify({ rating: value })
             });
             if (!response.ok) {

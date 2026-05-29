@@ -17,11 +17,20 @@ public class User {
     private String username;
     private String password;
     private String preferences;
+    private String resetToken;
+    private java.time.LocalDateTime resetTokenExpiry;
+    private String securityQuestion;
+    private String securityAnswer;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private List<Role> roles = new ArrayList<>();
     public User() {}
+
+    public String getResetToken() { return resetToken; }
+    public java.time.LocalDateTime getResetTokenExpiry() { return resetTokenExpiry; }
+    public void setResetToken(String resetToken) { this.resetToken = resetToken; }
+    public void setResetTokenExpiry(java.time.LocalDateTime resetTokenExpiry) { this.resetTokenExpiry = resetTokenExpiry; }
 
     public Integer getId() { return id; }
     public String getName() { return name; }
@@ -37,4 +46,8 @@ public class User {
     public void setPassword(String password) { this.password = password; }
     public void setPreferences(String preferences) { this.preferences = preferences; }
     public void setRoles(List<Role> roles) { this.roles = roles; }
+    public String getSecurityQuestion() { return securityQuestion; }
+    public void setSecurityQuestion(String securityQuestion) { this.securityQuestion = securityQuestion; }
+    public String getSecurityAnswer() { return securityAnswer; }
+    public void setSecurityAnswer(String securityAnswer) { this.securityAnswer = securityAnswer; }
 }

@@ -147,7 +147,7 @@
 }
 
 .admin-panel-btn {
-    background: #562121;
+    background: #8C7060;
     color: white;
     border: none;
     padding: 0.75rem 2rem;
@@ -159,8 +159,8 @@
     font-family: inherit;
 }
 .logout-btn {
-    background: #562121;
-    color: white;
+    background: #BFA89E;
+    color: #8C7060;
     border: none;
     padding: 0.75rem 2rem;
     border-radius: 20px;

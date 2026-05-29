@@ -171,4 +171,18 @@ public class RecipeServiceTests {
         service.addRating(r.getId(), 2);
         assertTrue(service.getAverageRating() > 0);
     }
+
+    @Test
+    void testGetByUserId() {
+        service.create(makeRequest("UserRecipe", "Breakfast"), 1);
+        List<Recipe> results = service.getByUserId(1);
+        assertFalse(results.isEmpty());
+    }
+
+    @Test
+    void testCountForUserId() {
+        service.create(makeRequest("CountRecipe", "Lunch"), 1);
+        long count = service.countForUserId(1);
+        assertTrue(count > 0);
+    }
 }

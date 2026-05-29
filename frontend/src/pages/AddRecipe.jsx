@@ -8,6 +8,7 @@ import { useOnlineStatus } from "../utils/useOnlineStatus";
 import { useOfflineQueue } from "../utils/useOfflineQueue";
 import { getUser } from "../utils/auth";
 import API_BASE from "../config.js"
+import { authHeaders } from "../utils/auth";
 
 export default function AddRecipe() {
     const isOnline = useOnlineStatus();
@@ -84,7 +85,9 @@ export default function AddRecipe() {
         if (!id) return;
         const fetchRecipe = async () => {
             try {
-                const response = await fetch(`${API_BASE}/api/recipes/${id}`);
+                const response = await fetch(`${API_BASE}/api/recipes/${id}`, {
+                    headers: authHeaders(),
+                });
                 if (!response.ok) throw new Error("Failed to fetch recipe");
                 const data = await response.json();
                 localStorage.setItem(`recipe_${id}`, JSON.stringify(data));
@@ -170,15 +173,13 @@ export default function AddRecipe() {
             if (id) {
                 response = await fetch(`${API_BASE}/api/recipes/${id}?userId=${getUser()?.id}`, {
                     method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
+                    headers: authHeaders(),
                     body: JSON.stringify(recipeData),
                 });
             } else {
                 response = await fetch(`${API_BASE}/api/recipes?userId=${getUser()?.id}`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: authHeaders(),
                     body: JSON.stringify(recipeData),
                 });
             }

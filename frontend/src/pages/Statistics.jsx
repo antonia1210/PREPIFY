@@ -5,11 +5,13 @@ const COLORS = ["#E5989B", "#B5C9D9", "#C08497", "#EED6D3", "#F6BD60", "#A8D5BA"
 import "./Statistics.css"
 import { connectRecipeSocket } from "../utils/recipeSocket";
 import API_BASE from "../config.js"
+import {authHeaders} from "../utils/auth";
 
 function getAverage(ratings) {
     if (!ratings || ratings.length === 0) return 0;
     return ratings.reduce((a, b) => a + b, 0) / ratings.length;
 }
+
 export default function Statistics() {
     const [categoryData, setCategoryData] = useState([]);
     const [recipes, setRecipes] = useState([]);
@@ -19,26 +21,15 @@ export default function Statistics() {
 
     const fetchStatistics = async () => {
         try {
-            const recipesResponse = await fetch(`${API_BASE}/api/recipes?page=0&size=100`);
+            const recipesResponse = await fetch(`${API_BASE}/api/recipes?page=0&size=100`, {headers: authHeaders()});
             const recipesData = await recipesResponse.json();
             setRecipes(recipesData);
 
             const [categoryResponse, countResponse, averageResponse] = await Promise.all([
-                fetch(`${API_BASE}/api/recipes/stats/by-category`),
-                fetch(`${API_BASE}/api/recipes/stats/total-count`),
-                fetch(`${API_BASE}/api/recipes/stats/average-rating`),
+                fetch(`${API_BASE}/api/recipes/stats/by-category`, {headers: authHeaders()}),
+                fetch(`${API_BASE}/api/recipes/stats/total-count`, {headers: authHeaders()}),
+                fetch(`${API_BASE}/api/recipes/stats/average-rating`, {headers: authHeaders()}),
             ]);
-            const usersResponse = await fetch(`${API_BASE}/api/users`);
-            const usersData = await usersResponse.json();
-
-            const userCounts = await Promise.all(
-                usersData.map(async (user) => {
-                    const countRes = await fetch(`${API_BASE}/api/recipes/user/${user.id}/count`);
-                    const count = await countRes.json();
-                    return { name: user.username, value: count };
-                })
-            );
-            setUserRecipeData(userCounts.filter(u => u.value > 0));
 
             const categoryMap = await categoryResponse.json();
             const count = await countResponse.json();
@@ -52,6 +43,30 @@ export default function Statistics() {
             setCategoryData(formattedCategoryData);
             setTotalCount(count);
             setAverageRating(average);
+
+            // Only load real users (not faker) for the per-user chart
+            const usersResponse = await fetch(`${API_BASE}/api/users`, {headers: authHeaders()});
+            const usersData = await usersResponse.json();
+
+            // Filter out faker users, keep only real ones
+            const realUsers = usersData.filter(u => !u.username.startsWith("faker_"));
+
+            const userCounts = await Promise.all(
+                realUsers.map(async (user) => {
+                    const countRes = await fetch(`${API_BASE}/api/recipes/user/${user.id}/count`, {headers: authHeaders()});
+                    const count = await countRes.json();
+                    return { name: user.username, value: count };
+                })
+            );
+
+            // Sort by recipe count and take top 10
+            const sorted = userCounts
+                .filter(u => u.value > 0)
+                .sort((a, b) => b.value - a.value)
+                .slice(0, 10);
+
+            setUserRecipeData(sorted);
+
         } catch (error) {
             console.error("Error fetching statistics:", error);
         }
@@ -59,14 +74,13 @@ export default function Statistics() {
 
     useEffect(() => {
         fetchStatistics();
-
         const client = connectRecipeSocket(() => {
             fetchStatistics();
         });
-
         return () => client.deactivate();
     }, []);
-    return(
+
+    return (
         <>
             <Navbar />
             <div className="statistics-page">
@@ -102,7 +116,6 @@ export default function Statistics() {
                             .slice(0, 4)
                             .map(r => (
                                 <div key={r.id} className="rating-row">
-
                                     <div className="rating-bar-container">
                                         <div
                                             className="rating-bar"
@@ -114,7 +127,7 @@ export default function Statistics() {
                                 </div>
                             ))}
                         <hr />
-                        <h3>Recipes per User</h3>
+                        <h3>Top 10 Users by Recipes</h3>
                         <ResponsiveContainer width="100%" height={300}>
                             <PieChart>
                                 <Pie
@@ -183,7 +196,7 @@ export default function Statistics() {
                             </table>
                         </div>
                         <hr />
-                        <h3>Recipes per User</h3>
+                        <h3>Top 10 Users by Recipes</h3>
                         <div className="table-wrapper">
                             <table>
                                 <thead>

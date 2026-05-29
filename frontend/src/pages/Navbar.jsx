@@ -3,8 +3,10 @@ import {useNavigate} from "react-router-dom";
 import {setCookie} from "../utils/cookies";
 import {useEffect, useState} from "react";
 import {isAdmin} from "../utils/auth";
+import {useInactivityLogout} from "../utils/useInactivityLogout.js";
 
 export default function Navbar() {
+    useInactivityLogout();
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     useEffect(() => {

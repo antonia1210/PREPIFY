@@ -9,6 +9,7 @@ import { useOfflineQueue } from "../utils/useOfflineQueue";
 import { connectRecipeSocket } from "../utils/recipeSocket";
 import { isAdmin, getUser } from "../utils/auth";
 import API_BASE from "../config.js"
+import { authHeaders, getToken } from "../utils/auth";
 
 export default function Feed() {
     const navigate = useNavigate();
@@ -50,7 +51,9 @@ export default function Feed() {
                     const params = new URLSearchParams();
                     if (category) params.append("category", category);
                     if (sortBy) params.append("sortBy", sortBy);
-                    const response = await fetch(`${API_BASE}/api/recipes/filter?${params.toString()}`);
+                    const response = await fetch(`${API_BASE}/api/recipes/filter?${params.toString()}`, {
+                        headers: authHeaders()
+                    });
                     const data = await response.json();
                     if (Array.isArray(data)) {
                         setRecipes(data);
@@ -59,7 +62,9 @@ export default function Feed() {
                     return;
                 }
                 if (query) {
-                    const response = await fetch(`${API_BASE}/api/recipes/search?query=${query}`);
+                    const response = await fetch(`${API_BASE}/api/recipes/search?query=${query}`, {
+                        headers: authHeaders()
+                    });
                     const data = await response.json();
                     if (Array.isArray(data)) {
                         setRecipes(data);
@@ -68,7 +73,9 @@ export default function Feed() {
                     return;
                 }
 
-                const response = await fetch(`${API_BASE}/api/recipes?page=0&size=${recipesPerPage}`);
+                const response = await fetch(`${API_BASE}/api/recipes?page=0&size=${recipesPerPage}`, {
+                    headers: authHeaders()
+                });
                 const data = await response.json();
                 prefetchedRef.current[0] = data;
                 if (data.length < recipesPerPage) setHasMore(false);
@@ -120,7 +127,9 @@ export default function Feed() {
         if (prefetchedRef.current[pageNum]) {
             return prefetchedRef.current[pageNum];
         }
-        const response = await fetch(`${API_BASE}/api/recipes?page=${pageNum}&size=${recipesPerPage}`);
+        const response = await fetch(`${API_BASE}/api/recipes?page=${pageNum}&size=${recipesPerPage}`, {
+            headers: authHeaders()
+        });
         const data = await response.json();
         prefetchedRef.current[pageNum] = data;
         return data;
@@ -172,7 +181,10 @@ export default function Feed() {
         }
 
         try {
-            const response = await fetch(`${API_BASE}/api/recipes/${id}?userId=${getUser()?.id}`, {method: "DELETE"});
+            const response = await fetch(`${API_BASE}/api/recipes/${id}?userId=${getUser()?.id}`, {
+                method: "DELETE",
+                headers: authHeaders()
+            });
             if (!response.ok) throw new Error("Failed to delete");
             setRecipes(prev => prev.filter(r => r.id !== id));
             localStorage.removeItem(`recipe_${id}`);
@@ -180,10 +192,11 @@ export default function Feed() {
             console.error("Error deleting:", error);
         }
     };
+
     const startGenerator = async () => {
         await fetch(`${API_BASE}/api/recipes/generator/start`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: authHeaders(),
             body: JSON.stringify({
                 batchSize: 3,
                 intervalMillis: 5000
@@ -193,7 +206,8 @@ export default function Feed() {
 
     const stopGenerator = async () => {
         await fetch(`${API_BASE}/api/recipes/generator/stop`, {
-            method: "POST"
+            method: "POST",
+            headers: authHeaders()
         });
     };
 

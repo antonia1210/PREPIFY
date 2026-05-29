@@ -1,5 +1,5 @@
 import { test, expect } from "vitest";
-import { addRecipe, updateRecipe, deleteRecipe } from "../utils/recipeUtils";
+import { addRecipe, updateRecipe, deleteRecipe } from "../utils/recipeUtils.js";
 
 test("adds a recipe", () => {
     const result = addRecipe([], { name: "Pizza" });

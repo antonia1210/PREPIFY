@@ -7,10 +7,13 @@ import com.anto.backend.model.Recipe;
 import com.anto.backend.service.LogService;
 import com.anto.backend.service.MaliciousDetectionService;
 import com.anto.backend.service.RecipeService;
+import org.springframework.cache.annotation.Cacheable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -88,6 +91,52 @@ public class RecipeController {
     @GetMapping("/user/{userId}/count")
     public long countForUserId(@PathVariable int userId) {
         return service.countForUserId(userId);
+    }
+
+    @GetMapping("/stats/rankings/naive")
+    public ResponseEntity<?> naiveRankings() {
+        long start = System.currentTimeMillis();
+        List<Object[]> results = service.getWeightedRankingsNaive();
+        long duration = System.currentTimeMillis() - start;
+
+        List<Map<String, Object>> rankings = results.stream().map(row -> {
+            Map<String, Object> map = new LinkedHashMap<>();
+            map.put("id", row[0]);
+            map.put("name", row[1]);
+            map.put("category", row[2]);
+            map.put("avgRating", row[3]);
+            map.put("ratingCount", row[4]);
+            return map;
+        }).toList();
+
+        return ResponseEntity.ok(Map.of(
+                "queryTimeMs", duration,
+                "count", rankings.size(),
+                "rankings", rankings
+        ));
+    }
+
+    @GetMapping("/stats/rankings/optimized")
+     @Cacheable("rankings")
+    public ResponseEntity<?> optimizedRankings() {
+        long start = System.currentTimeMillis();
+        List<Object[]> results = service.getWeightedRankingsNaive();
+        long duration = System.currentTimeMillis() - start;
+        List<Map<String, Object>> rankings = results.stream().map(row -> {
+            Map<String, Object> map = new LinkedHashMap<>();
+            map.put("id", row[0]);
+            map.put("name", row[1]);
+            map.put("category", row[2]);
+            map.put("avgRating", row[3]);
+            map.put("ratingCount", row[4]);
+            return map;
+        }).toList();
+
+        return ResponseEntity.ok(Map.of(
+                "queryTimeMs", duration,
+                "count", rankings.size(),
+                "rankings", rankings
+        ));
     }
 
 }

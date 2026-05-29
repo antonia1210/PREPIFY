@@ -6,6 +6,7 @@ import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import { useParams, useNavigate } from "react-router-dom";
 import API_BASE from "../config.js"
+import {authHeaders} from "../utils/auth";
 
 export default function Chat() {
     const [conversations, setConversations] = useState([]);
@@ -19,7 +20,7 @@ export default function Chat() {
     const navigate = useNavigate();
 
     const fetchConversations = () => {
-        fetch(`${API_BASE}/api/messages/conversations/${currentUser.id}`)
+        fetch(`${API_BASE}/api/messages/conversations/${currentUser.id}`,{headers: authHeaders()})
             .then(res => res.json())
             .then(data => setConversations(Array.isArray(data) ? data : []));
     };
@@ -30,7 +31,7 @@ export default function Chat() {
 
     useEffect(() => {
         if (userId && currentUser) {
-            fetch(`${API_BASE}/api/users/${userId}`)
+            fetch(`${API_BASE}/api/users/${userId}`, {headers: authHeaders()})
                 .then(res => res.json())
                 .then(user => {
                     setSelectedConv({
@@ -44,7 +45,7 @@ export default function Chat() {
     useEffect(() => {
         if (!selectedConv) return;
 
-        fetch(`${API_BASE}/api/messages/conversation?userId1=${currentUser.id}&userId2=${selectedConv.otherUserId}`)
+        fetch(`${API_BASE}/api/messages/conversation?userId1=${currentUser.id}&userId2=${selectedConv.otherUserId}`, {headers: authHeaders()})
             .then(res => res.json())
             .then(data => setMessages(data));
 
@@ -87,7 +88,7 @@ export default function Chat() {
 
         await fetch(`${API_BASE}/api/messages/send`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: authHeaders(),
             body: JSON.stringify(message)
         });
 

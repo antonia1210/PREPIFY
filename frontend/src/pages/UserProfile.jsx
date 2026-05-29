@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 import "./UserProfile.css";
 import API_BASE from "../config.js"
 import {isAdmin} from "../utils/auth.js";
+import {authHeaders} from "../utils/auth";
+import { logout } from "../utils/auth.js";
+
 
 export default function Profile() {
     const navigate = useNavigate();
@@ -19,15 +22,16 @@ export default function Profile() {
         const parsedUser = JSON.parse(stored);
         setUser(parsedUser);
 
-        fetch(`${API_BASE}/api/recipes/user/${parsedUser.id}`)
+        fetch(`${API_BASE}/api/recipes/user/${parsedUser.id}`, {headers: authHeaders()})
             .then(res => res.json())
             .then(data => setRecipes(data));
     }, []);
 
-    const handleLogout = () => {
-        localStorage.removeItem("user");
+    const handleLogout = async () => {
+        await logout();
         navigate("/login");
     };
+
 
     if (!user) return null;
 

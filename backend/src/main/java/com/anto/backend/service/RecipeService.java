@@ -143,4 +143,7 @@ public class RecipeService {
                         .collect(Collectors.joining(",")))
                 .orElse("UNKNOWN");
     }
+    public List<Object[]> getWeightedRankingsNaive() {
+        return recipeRepository.getWeightedRankingsNaive();
+    }
 }

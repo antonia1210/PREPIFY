@@ -22,6 +22,9 @@
     text-align: center;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
+.login-box-otp {
+    width: min(100%, 420px);
+}
 .login-box h2 {
     color: #562121;
     font-weight: bold;
@@ -33,7 +36,7 @@
     text-align: center;
     margin-bottom: 5px;
 }
-.login-box input {
+.login-box input:not(.otp-box) {
     width: 100%;
     box-sizing: border-box;
     padding: 10px;
@@ -80,7 +83,7 @@ input:focus {
     margin-bottom: 10px;
     margin-top: -10px;
 }
-.login-container p{
+.login-container p {
     font-size: 15px;
     align-self: center;
 }
@@ -89,15 +92,54 @@ input:focus {
     align-self: flex-start;
     margin-left: 10px;
 }
+.otp-boxes {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin: 1.2rem 0 0.5rem;
+    width: 100%;
+}
+
+.otp-box {
+    width: 48px !important;
+    max-width: 48px !important;
+    min-width: 48px !important;
+    height: 56px;
+    flex: 0 0 48px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    border-radius: 10px !important;
+    border: 2px solid #e0d6cc !important;
+    background-color: #f0f0f0 !important;
+    color: #562121;
+    caret-color: #AF776F;
+    padding: 0 !important;
+    margin-bottom: 0 !important;
+    transition: border-color 0.2s;
+    box-sizing: border-box !important;
+}
+.otp-box:focus {
+    outline: none !important;
+    border-color: #AF776F !important;
+    background-color: #fff8f3 !important;
+}
+
 @media (max-width: 480px) {
     .login-box {
         padding: 20px;
     }
-
+    .login-box-otp {
+        width: min(100%, 360px);
+    }
+    .otp-box {
+        width: 40px !important;
+        height: 48px;
+        font-size: 20px;
+    }
     .logo {
         margin-left: 0;
     }
-
     .back-link {
         margin-left: 0;
     }

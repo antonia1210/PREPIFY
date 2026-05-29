@@ -1,5 +1,5 @@
 import { test, expect } from "vitest";
-import { paginate } from "../utils/pagination";
+import { paginate } from "../utils/pagination.js";
 
 test("returns first page correctly", () => {
     const result = paginate([1,2,3,4], 1, 2);

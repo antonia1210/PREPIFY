@@ -23,4 +23,15 @@ public interface RecipeRepository extends JpaRepository<Recipe, Integer> {
     List<Object[]> countByCategory();
 
     long countByUserId(Integer userId);
+
+    @Query(value = """
+        SELECT r.id, r.name, r.category,
+               AVG(rr.rating) as avg_rating,
+               COUNT(rr.rating) as rating_count
+        FROM recipes r
+        LEFT JOIN recipe_ratings rr ON r.id = rr.recipe_id
+        GROUP BY r.id, r.name, r.category
+        ORDER BY avg_rating DESC, rating_count DESC
+        """, nativeQuery = true)
+    List<Object[]> getWeightedRankingsNaive();
 }

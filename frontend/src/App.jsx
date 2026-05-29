@@ -8,23 +8,32 @@ import AddRecipe from "./pages/AddRecipe.jsx";
 import Statistics from "./pages/Statistics.jsx";
 import UserProfile from "./pages/UserProfile.jsx";
 import Chat from "./pages/Chat.jsx";
-import "./pages/global.css"
 import AdminPanel from "./pages/AdminPanel";
-function App() {
+import ForgotPassword from "./pages/ForgotPassword";
+import ProtectedRoute from "./utils/ProtectedRoute";
+import "./pages/global.css";
+import ResetPassword from "./pages/ResetPassword";
 
-    return (<Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/feed" element={<Feed />} />
-        <Route path="/recipe/:id" element={<RecipeDetails />} />
-        <Route path="/add" element={<AddRecipe />} />
-        <Route path="/edit/:id" element={<AddRecipe />} />
-        <Route path="/statistics" element={<Statistics />} />
-        <Route path="/user-profile" element={<UserProfile />} />
-        <Route path="/chat" element={<Chat />} />
-        <Route path="/chat/:userId" element={<Chat />} />
-        <Route path="/admin" element={<AdminPanel />} />
+function App() {
+    return (
+        <Routes>
+            {/* Public routes */}
+            <Route path="/" element={<Home />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+
+            {/* Protected routes */}
+            <Route path="/feed" element={<ProtectedRoute><Feed /></ProtectedRoute>} />
+            <Route path="/recipe/:id" element={<ProtectedRoute><RecipeDetails /></ProtectedRoute>} />
+            <Route path="/add" element={<ProtectedRoute><AddRecipe /></ProtectedRoute>} />
+            <Route path="/edit/:id" element={<ProtectedRoute><AddRecipe /></ProtectedRoute>} />
+            <Route path="/statistics" element={<ProtectedRoute><Statistics /></ProtectedRoute>} />
+            <Route path="/user-profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
+            <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+            <Route path="/chat/:userId" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+            <Route path="/admin" element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
         </Routes>
     );
 }
